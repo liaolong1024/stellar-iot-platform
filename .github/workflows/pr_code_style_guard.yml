@@ -48,7 +48,7 @@ jobs:
           wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.17.0/checkstyle-10.17.0-all.jar -O checkstyle.jar
                     # 2. 执行检查（关键步骤）
           java -jar checkstyle.jar \
-            -c checkstyle.xml \          # 配置文件路径
+            -c .CI/checkstyle/java/checkstyle.xml \          # 配置文件路径
             -f xml \                     # 输出 XML 格式
             -o checkstyle-result.xml \   # 结果文件
             target_files.txt             # 仅检查修改的文件
