@@ -1,8 +1,11 @@
 package com.stellar.iot.command;
 
-/**
- * @author ll
- * @since 2025-11-30 20:20
- */
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class StellarGateway {
+    public static void main(String[] args) {
+        SpringApplication.run(StellarGateway.class, args);
+    }
 }
