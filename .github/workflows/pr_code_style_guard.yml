@@ -1,0 +1,61 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: pr code style guard
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 必须获取完整历史以计算 diff
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # 仅获取 PR 中修改的文件（排除删除的文件）
+          git diff --name-only --diff-filter=ACMRTUXB \
+            ${{ github.event.pull_request.base.sha }}...${{ github.sha }} \
+            > changed_files.txt
+          
+          # 过滤出需要检查的文件类型（按需修改扩展名）
+          grep -E '\.(java)$' changed_files.txt || true > target_files.txt
+          
+          # 将结果存入输出变量
+          echo "files=$(tr '\n' ' ' < target_files.txt)" >> $GITHUB_OUTPUT
+          echo "Found files: $(cat target_files.txt || echo 'none')"
+      - name: Set up Java 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+      - name: Run Checkstyle on changed files # Java 示例
+        if: steps.changed-files.outputs.files != '' && contains(steps.changed-files.outputs.files, '.java')
+        run: |
+          # 仅检查 PR 中修改的 Java 文件
+          wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.17.0/checkstyle-10.17.0-all.jar -O checkstyle.jar
+                    # 2. 执行检查（关键步骤）
+          java -jar checkstyle.jar \
+            -c checkstyle.xml \          # 配置文件路径
+            -f xml \                     # 输出 XML 格式
+            -o checkstyle-result.xml \   # 结果文件
+            target_files.txt             # 仅检查修改的文件
+          
+          # 3. 检查结果（非零退出码会阻断 PR 合并）
+          if grep -q '<error' checkstyle-result.xml; then
+            echo "::error::Code style violations found in modified files!"
+            cat checkstyle-result.xml
+            exit 1
+          fi
