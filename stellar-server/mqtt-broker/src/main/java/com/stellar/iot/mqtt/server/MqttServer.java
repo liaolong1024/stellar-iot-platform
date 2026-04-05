@@ -5,6 +5,7 @@ import com.stellar.iot.mqtt.handler.connect.MqttConnectHandler;
 import com.stellar.iot.mqtt.handler.MqttHandler;
 import com.stellar.iot.mqtt.handler.MqttMessageDelegate;
 import com.stellar.iot.mqtt.handler.connect.MqttDisConnectHandler;
+import com.stellar.iot.mqtt.handler.connect.MqttPingReqHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -22,7 +23,8 @@ public class MqttServer {
         NioEventLoopGroup workerGroup = new NioEventLoopGroup(1);
         List<MqttHandler> mqttConnectHandlers = Lists.newArrayList(
                 new MqttConnectHandler(),
-                new MqttDisConnectHandler()
+                new MqttDisConnectHandler(),
+                new MqttPingReqHandler()
         );
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .channel(NioServerSocketChannel.class)
