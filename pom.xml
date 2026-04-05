@@ -26,6 +26,8 @@
         <commons.lang3.version>3.20.0</commons.lang3.version>
         <spring.boot.version>2.7.18</spring.boot.version>
         <lombok.version>1.18.26</lombok.version>
+        <netty-all.version>4.1.56.Final</netty-all.version>
+        <guava.version>33.5.0-jre</guava.version>
     </properties>
 
     <dependencyManagement>
@@ -48,8 +50,13 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
-                <version>4.1.56.Final</version>
-                <scope>compile</scope>
+                <version>${netty-all.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
             <dependency>

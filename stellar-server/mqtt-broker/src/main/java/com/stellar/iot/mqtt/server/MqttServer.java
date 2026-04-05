@@ -1,7 +1,10 @@
 package com.stellar.iot.mqtt.server;
 
-import com.stellar.iot.mqtt.handler.MqttConnectHandler;
+import com.google.common.collect.Lists;
+import com.stellar.iot.mqtt.handler.connect.MqttConnectHandler;
+import com.stellar.iot.mqtt.handler.MqttHandler;
 import com.stellar.iot.mqtt.handler.MqttMessageDelegate;
+import com.stellar.iot.mqtt.handler.connect.MqttDisConnectHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -11,10 +14,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.mqtt.MqttDecoder;
 import io.netty.handler.codec.mqtt.MqttEncoder;
 
+import java.util.List;
+
 public class MqttServer {
     public static void main(String[] args) {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
         NioEventLoopGroup workerGroup = new NioEventLoopGroup(1);
+        List<MqttHandler> mqttConnectHandlers = Lists.newArrayList(
+                new MqttConnectHandler(),
+                new MqttDisConnectHandler()
+        );
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .channel(NioServerSocketChannel.class)
                 .group(bossGroup, workerGroup)
@@ -24,8 +33,7 @@ public class MqttServer {
                         channel.pipeline()
                                 .addLast("decoder", new MqttDecoder())
                                 .addLast("encoder", MqttEncoder.INSTANCE)
-                                .addLast(new MqttMessageDelegate(new MqttConnectHandler()));
-
+                                .addLast(new MqttMessageDelegate(mqttConnectHandlers));
                     }
                 });
         try {

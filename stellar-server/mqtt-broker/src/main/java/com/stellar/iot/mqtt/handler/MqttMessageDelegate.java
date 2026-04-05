@@ -7,19 +7,26 @@ import io.netty.handler.codec.mqtt.MqttMessageType;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MqttMessageDelegate extends SimpleChannelInboundHandler<MqttMessage> {
+    private final Map<MqttMessageType, MqttHandler> handlerMap;
 
-    private final MqttHandler connectHandler;
-
-    public MqttMessageDelegate(MqttHandler connectHandler) {
-        this.connectHandler = connectHandler;
+    public MqttMessageDelegate(List<MqttHandler> handlers) {
+        handlerMap = new HashMap<>();
+        for (MqttHandler handler : handlers) {
+            handlerMap.put(handler.handleType(), handler);
+        }
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext context, MqttMessage mqttMessage) {
         MqttMessageType messageType = mqttMessage.fixedHeader().messageType();
-        if (MqttMessageType.CONNECT == messageType) {
-            connectHandler.handle(context, mqttMessage);
+        MqttHandler mqttHandler = handlerMap.get(messageType);
+        if (mqttHandler != null) {
+            mqttHandler.handle(context, mqttMessage);
         }
     }
 
