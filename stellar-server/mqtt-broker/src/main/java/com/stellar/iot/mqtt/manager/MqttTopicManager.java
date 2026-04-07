@@ -1,5 +1,6 @@
-package com.stellar.iot.mqtt.session;
+package com.stellar.iot.mqtt.manager;
 
+import com.stellar.iot.mqtt.bean.MqttTopicMessageWrapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.mqtt.*;
@@ -11,11 +12,11 @@ public class MqttTopicManager {
     /**
      * topicName -> (clientId -> session)
      */
-    private static final Map<String, Map<String, MqttSession>> SUBSCRIBE_TOPIC_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, MqttTopicMessageWrapper>> SUBSCRIBE_TOPIC_MAP = new ConcurrentHashMap<>();
 
-    public static void storeTopicSubscribeClient(String topicName, MqttSession mqttSession) {
-        Map<String, MqttSession> clientIdSessionMap = SUBSCRIBE_TOPIC_MAP.computeIfAbsent(topicName, key -> new HashMap<>());
-        clientIdSessionMap.put(mqttSession.getClientId(), mqttSession);
+    public static void storeTopicSubscribeClient(String topicName, MqttTopicMessageWrapper mqttTopicMessageWrapper) {
+        Map<String, MqttTopicMessageWrapper> clientIdSessionMap = SUBSCRIBE_TOPIC_MAP.computeIfAbsent(topicName, key -> new HashMap<>());
+        clientIdSessionMap.put(mqttTopicMessageWrapper.getClientId(), mqttTopicMessageWrapper);
     }
 
     /**
@@ -25,18 +26,18 @@ public class MqttTopicManager {
      * @param clientId 客户端id
      */
     public static void removeTopicSubscribeClient(String topicName, String clientId) {
-        Map<String, MqttSession> clientIdSessionMap = SUBSCRIBE_TOPIC_MAP.computeIfAbsent(topicName, key -> new HashMap<>());
+        Map<String, MqttTopicMessageWrapper> clientIdSessionMap = SUBSCRIBE_TOPIC_MAP.computeIfAbsent(topicName, key -> new HashMap<>());
         clientIdSessionMap.remove(clientId);
     }
 
-    public static Map<String, MqttSession> getTopicSubscribeClient(String topicName) {
+    public static Map<String, MqttTopicMessageWrapper> getTopicSubscribeClient(String topicName) {
         return SUBSCRIBE_TOPIC_MAP.get(topicName);
     }
 
-    public static void publishClients(MqttPublishMessage msg, MqttSession session) {
+    public static void publishClients(MqttPublishMessage msg, MqttTopicMessageWrapper wrapper) {
         try {
-            final Channel channel = session.getChannel();
-            MqttQoS qos = msg.fixedHeader().qosLevel();
+            final Channel channel = wrapper.getChannel();
+            MqttQoS qos = MqttQoS.valueOf(Math.min(msg.fixedHeader().qosLevel().value(), wrapper.getMqttQoS().value()));
             ByteBuf sendBuf = msg.content().retainedDuplicate();
             sendBuf.resetReaderIndex();
             /*配置推送消息类型*/

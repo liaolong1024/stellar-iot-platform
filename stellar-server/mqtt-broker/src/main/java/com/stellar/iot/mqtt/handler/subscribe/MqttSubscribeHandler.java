@@ -1,8 +1,8 @@
 package com.stellar.iot.mqtt.handler.subscribe;
 
+import com.stellar.iot.mqtt.bean.MqttTopicMessageWrapper;
 import com.stellar.iot.mqtt.handler.MqttHandler;
-import com.stellar.iot.mqtt.session.MqttSession;
-import com.stellar.iot.mqtt.session.MqttTopicManager;
+import com.stellar.iot.mqtt.manager.MqttTopicManager;
 import com.stellar.iot.mqtt.utils.ChannelAttrUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,7 +24,12 @@ public class MqttSubscribeHandler implements MqttHandler {
         List<MqttTopicSubscription> topicList = subscribeMessage.payload().topicSubscriptions();
         for (MqttTopicSubscription mqttTopicSubscription : topicList) {
             String topicName = mqttTopicSubscription.topicName();
-            MqttTopicManager.storeTopicSubscribeClient(topicName, new MqttSession(clientId, context.channel()));
+            MqttTopicMessageWrapper mqttTopicMessageWrapper = MqttTopicMessageWrapper.builder()
+                    .mqttQoS(mqttTopicSubscription.qualityOfService())
+                    .channel(context.channel())
+                    .clientId(clientId)
+                    .build();
+            MqttTopicManager.storeTopicSubscribeClient(topicName, mqttTopicMessageWrapper);
             grantedQos.add(mqttTopicSubscription.qualityOfService().value());
         }
 

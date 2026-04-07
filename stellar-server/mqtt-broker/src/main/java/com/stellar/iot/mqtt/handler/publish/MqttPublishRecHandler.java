@@ -1,7 +1,8 @@
 package com.stellar.iot.mqtt.handler.publish;
 
+import com.stellar.iot.mqtt.bean.MqttTopicMessageWrapper;
 import com.stellar.iot.mqtt.handler.MqttHandler;
-import com.stellar.iot.mqtt.session.MqttMessageManager;
+import com.stellar.iot.mqtt.manager.MqttMessageManager;
 import com.stellar.iot.mqtt.utils.ChannelAttrUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,7 +13,12 @@ public class MqttPublishRecHandler implements MqttHandler {
     public void handle(ChannelHandlerContext context, MqttMessage mqttMessage) {
         String clientId = ChannelAttrUtils.getClientId(context.channel());
         MqttMessageIdVariableHeader recVariableHeader = (MqttMessageIdVariableHeader) mqttMessage.variableHeader();
-        MqttMessageManager.storeServerPublisherMessage(recVariableHeader.messageId());
+
+        MqttTopicMessageWrapper wrapper = MqttTopicMessageWrapper.builder()
+                .channel(context.channel())
+                .clientId(clientId)
+                .build();
+        MqttMessageManager.storeServerPublisherMessage(clientId, recVariableHeader.messageId(), wrapper);
 
         MqttFixedHeader fixedHeader = new MqttFixedHeader(MqttMessageType.PUBREL, false, MqttQoS.AT_LEAST_ONCE, false, 0);
         MqttMessageIdVariableHeader variableHeader = MqttMessageIdVariableHeader.from(recVariableHeader.messageId());

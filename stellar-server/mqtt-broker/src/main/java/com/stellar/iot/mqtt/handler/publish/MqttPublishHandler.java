@@ -1,9 +1,9 @@
 package com.stellar.iot.mqtt.handler.publish;
 
+import com.stellar.iot.mqtt.bean.MqttTopicMessageWrapper;
 import com.stellar.iot.mqtt.handler.MqttHandler;
-import com.stellar.iot.mqtt.session.MqttMessageManager;
-import com.stellar.iot.mqtt.session.MqttSession;
-import com.stellar.iot.mqtt.session.MqttTopicManager;
+import com.stellar.iot.mqtt.manager.MqttMessageManager;
+import com.stellar.iot.mqtt.manager.MqttTopicManager;
 import com.stellar.iot.mqtt.utils.ChannelAttrUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -41,12 +41,12 @@ public class MqttPublishHandler implements MqttHandler {
         }
 
         for (String itemTopic : topicList) {
-            Map<String, MqttSession> clientMap = MqttTopicManager.getTopicSubscribeClient(itemTopic);
+            Map<String, MqttTopicMessageWrapper> clientMap = MqttTopicManager.getTopicSubscribeClient(itemTopic);
             if (MapUtils.isEmpty(clientMap)) {
                 continue;
             }
-            for (MqttSession session : clientMap.values()) {
-                MqttTopicManager.publishClients(message, session);
+            for (MqttTopicMessageWrapper wrapper : clientMap.values()) {
+                MqttTopicManager.publishClients(message, wrapper);
             }
         }
     }
@@ -56,7 +56,7 @@ public class MqttPublishHandler implements MqttHandler {
         /*获取消息等级*/
         MqttQoS mqttQoS = message.fixedHeader().qosLevel();
         int packetId = message.variableHeader().packetId();
-        System.out.printf("packetId=%s\n", packetId);
+        System.out.printf("messageId=%d\n", packetId);
         MqttFixedHeader fixedHeader;
         switch (mqttQoS.value()) {
             /*0,1消息等级，直接回复*/
@@ -66,8 +66,8 @@ public class MqttPublishHandler implements MqttHandler {
                 break;
             case 2:
                 // 处理Qos2的消息确认
-                if (!MqttMessageManager.relOutContains(packetId)) {
-                    MqttMessageManager.storeClientPublisherMessageId(packetId);
+                if (!MqttMessageManager.checkIfServerContainsMessage(clientId, packetId)) {
+                    MqttMessageManager.storeClientPublisherMessageId(message, clientId);
                 }
                 fixedHeader = new MqttFixedHeader(MqttMessageType.PUBREC, false, MqttQoS.AT_MOST_ONCE, false, 0);
                 break;

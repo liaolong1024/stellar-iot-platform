@@ -3,31 +3,19 @@ package com.stellar.iot.mqtt.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.mqtt.MqttMessage;
-import io.netty.handler.codec.mqtt.MqttMessageType;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+public class MqttHandlerInboundAdapter extends SimpleChannelInboundHandler<MqttMessage> {
+    private final MqttMessageHandlerDelegate delegate;
 
-public class MqttMessageDelegate extends SimpleChannelInboundHandler<MqttMessage> {
-    private final Map<MqttMessageType, MqttHandler> handlerMap;
-
-    public MqttMessageDelegate(List<MqttHandler> handlers) {
-        handlerMap = new HashMap<>();
-        for (MqttHandler handler : handlers) {
-            handlerMap.put(handler.handleType(), handler);
-        }
+    public MqttHandlerInboundAdapter(MqttMessageHandlerDelegate delegate) {
+        this.delegate = delegate;
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext context, MqttMessage mqttMessage) {
-        MqttMessageType messageType = mqttMessage.fixedHeader().messageType();
-        MqttHandler mqttHandler = handlerMap.get(messageType);
-        if (mqttHandler != null) {
-            mqttHandler.handle(context, mqttMessage);
-        }
+    protected void channelRead0(ChannelHandlerContext ctx, MqttMessage msg) {
+        delegate.handle(ctx, msg);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.stellar.iot.mqtt.session;
+package com.stellar.iot.mqtt.manager;
 
 import java.util.concurrent.ConcurrentHashMap;
 

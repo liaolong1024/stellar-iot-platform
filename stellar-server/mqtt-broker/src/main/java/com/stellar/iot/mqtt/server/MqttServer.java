@@ -1,9 +1,10 @@
 package com.stellar.iot.mqtt.server;
 
 import com.google.common.collect.Lists;
+import com.stellar.iot.mqtt.handler.MqttHandlerInboundAdapter;
 import com.stellar.iot.mqtt.handler.connect.MqttConnectHandler;
 import com.stellar.iot.mqtt.handler.MqttHandler;
-import com.stellar.iot.mqtt.handler.MqttMessageDelegate;
+import com.stellar.iot.mqtt.handler.MqttMessageHandlerDelegate;
 import com.stellar.iot.mqtt.handler.connect.MqttDisConnectHandler;
 import com.stellar.iot.mqtt.handler.connect.MqttPingReqHandler;
 import com.stellar.iot.mqtt.handler.publish.*;
@@ -36,6 +37,7 @@ public class MqttServer {
                 new MqttPublishCompHandler(),
                 new MqttPublishAckHandler()
         );
+        MqttMessageHandlerDelegate delegate = new MqttMessageHandlerDelegate(mqttConnectHandlers);
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .channel(NioServerSocketChannel.class)
                 .group(bossGroup, workerGroup)
@@ -45,7 +47,7 @@ public class MqttServer {
                         channel.pipeline()
                                 .addLast("decoder", new MqttDecoder())
                                 .addLast("encoder", MqttEncoder.INSTANCE)
-                                .addLast(new MqttMessageDelegate(mqttConnectHandlers));
+                                .addLast(new MqttHandlerInboundAdapter(delegate));
                     }
                 });
         try {

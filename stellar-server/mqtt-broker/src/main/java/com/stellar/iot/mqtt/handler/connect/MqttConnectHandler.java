@@ -1,8 +1,8 @@
 package com.stellar.iot.mqtt.handler.connect;
 
 import com.stellar.iot.mqtt.handler.MqttHandler;
-import com.stellar.iot.mqtt.session.MqttSession;
-import com.stellar.iot.mqtt.session.MqttSessionManager;
+import com.stellar.iot.mqtt.manager.MqttSession;
+import com.stellar.iot.mqtt.manager.MqttSessionManager;
 import com.stellar.iot.mqtt.utils.ChannelAttrUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;

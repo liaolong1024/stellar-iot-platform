@@ -1,4 +1,4 @@
-package com.stellar.iot.mqtt.session;
+package com.stellar.iot.mqtt.manager;
 
 import io.netty.channel.Channel;
 import lombok.*;
