@@ -31,8 +31,10 @@ public class MqttConnectHandler implements MqttHandler {
         context.pipeline().addFirst(new IdleStateHandler(0, 0, idleSeconds));
 
         // 保存会话
-        MqttSession mqttSession = new MqttSession();
-        mqttSession.setClientId(clientId);
+        MqttSession mqttSession = MqttSession.builder()
+                .clientId(clientId)
+                .channel(context.channel())
+                .build();
         MqttSessionManager.storeSession(clientId, mqttSession);
         ChannelAttrUtils.setClientId(context.channel(), clientId);
 

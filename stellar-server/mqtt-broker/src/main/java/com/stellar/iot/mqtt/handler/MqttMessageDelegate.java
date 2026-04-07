@@ -44,4 +44,10 @@ public class MqttMessageDelegate extends SimpleChannelInboundHandler<MqttMessage
             super.userEventTriggered(ctx, evt);
         }
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        System.out.println(cause.getMessage());
+        ctx.close();
+    }
 }

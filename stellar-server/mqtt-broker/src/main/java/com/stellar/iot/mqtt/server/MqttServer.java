@@ -6,6 +6,9 @@ import com.stellar.iot.mqtt.handler.MqttHandler;
 import com.stellar.iot.mqtt.handler.MqttMessageDelegate;
 import com.stellar.iot.mqtt.handler.connect.MqttDisConnectHandler;
 import com.stellar.iot.mqtt.handler.connect.MqttPingReqHandler;
+import com.stellar.iot.mqtt.handler.publish.*;
+import com.stellar.iot.mqtt.handler.subscribe.MqttSubscribeHandler;
+import com.stellar.iot.mqtt.handler.subscribe.MqttUnsubscribeHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -24,7 +27,14 @@ public class MqttServer {
         List<MqttHandler> mqttConnectHandlers = Lists.newArrayList(
                 new MqttConnectHandler(),
                 new MqttDisConnectHandler(),
-                new MqttPingReqHandler()
+                new MqttPingReqHandler(),
+                new MqttPublishHandler(),
+                new MqttPublishRelHandler(),
+                new MqttSubscribeHandler(),
+                new MqttUnsubscribeHandler(),
+                new MqttPublishRecHandler(),
+                new MqttPublishCompHandler(),
+                new MqttPublishAckHandler()
         );
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .channel(NioServerSocketChannel.class)

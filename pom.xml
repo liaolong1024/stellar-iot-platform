@@ -45,6 +45,12 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.lang3.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.5.0</version>
+                <scope>compile</scope>
+            </dependency>
 
             <!--Netty-->
             <dependency>

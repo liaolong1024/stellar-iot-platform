@@ -13,7 +13,7 @@ public class MqttPingReqHandler implements MqttHandler {
     @Override
     public void handle(ChannelHandlerContext context, MqttMessage mqttMessage) {
         String clientId = ChannelAttrUtils.getClientId(context.channel());
-        System.out.printf("clientId=%s ping req", clientId);
+        System.out.printf("clientId=%s ping req\n", clientId);
         MqttFixedHeader fixedHeader = new MqttFixedHeader(MqttMessageType.PINGRESP, false, MqttQoS.AT_MOST_ONCE, false, 0);
         MqttMessage mqttMessageResp = new MqttMessage(fixedHeader);
         ChannelFuture channelFuture = context.channel().writeAndFlush(mqttMessageResp);
