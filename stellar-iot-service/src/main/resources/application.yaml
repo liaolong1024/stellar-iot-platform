@@ -1,0 +1,8 @@
+server:
+  port: 9000
+influxdb:
+  url: http://192.168.216.135:8086
+  org: stellar
+  bucket: stellar_iot/autogen
+  useranme:
+  password:

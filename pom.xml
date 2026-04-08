@@ -11,11 +11,11 @@
     <modules>
         <module>stellar-base-ability</module>
         <module>stellar-command-service</module>
-        <module>stellar-device-service</module>
-        <module>stellar-report-service</module>
+        <module>stellar-iot-service</module>
         <module>stellar-gateway-service</module>
         <module>stellar-server</module>
         <module>stellar-server/mqtt-broker</module>
+        <module>stellar-admin</module>
     </modules>
 
     <properties>

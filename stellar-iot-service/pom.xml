@@ -6,9 +6,10 @@
         <artifactId>stellar-iot-platform</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>stellar-report-service</artifactId>
+    <artifactId>stellar-iot-service</artifactId>
     <packaging>jar</packaging>
     <name>stellar-report-service</name>
+
     <dependencies>
         <!--Inner Start-->
         <dependency>
@@ -17,6 +18,34 @@
             <version>1.0.0</version>
         </dependency>
         <!--Inner End-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.influxdb</groupId>
+            <artifactId>influxdb-client-java</artifactId>
+            <version>6.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
